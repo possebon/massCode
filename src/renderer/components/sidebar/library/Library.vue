@@ -37,11 +37,10 @@ const folderSortValue = computed(() => {
   return `${by}:${order}`
 })
 
-async function onFolderSortChange(value: string) {
+function onFolderSortChange(value: string) {
   const [sortBy, sortOrder] = value.split(':')
   state.folderSortBy = sortBy as any
   state.folderSortOrder = sortOrder as any
-  await getFolders()
 }
 
 const tagsListHeight = store.app.get('sizes.tagsListHeight') as number

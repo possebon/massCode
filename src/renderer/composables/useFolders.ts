@@ -135,6 +135,13 @@ watch(
   },
 )
 
+watch(
+  () => [state.folderSortBy, state.folderSortOrder],
+  async () => {
+    await getFolders(false)
+  },
+)
+
 function clearFolderSelection() {
   selectedFolderIds.value = []
   state.folderId = undefined

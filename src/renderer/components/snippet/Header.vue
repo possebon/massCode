@@ -13,8 +13,6 @@ const {
   searchSelectedIndex,
   selectSearchSnippet,
   displayedSnippets,
-  getSnippets,
-  selectFirstSnippet,
 } = useSnippets()
 const { isFocusedSearch, state } = useApp()
 
@@ -24,12 +22,10 @@ const snippetSortValue = computed(() => {
   return `${by}:${order}`
 })
 
-async function onSnippetSortChange(value: string) {
+function onSnippetSortChange(value: string) {
   const [sortBy, sortOrder] = value.split(':')
   state.snippetSortBy = sortBy as any
   state.snippetSortOrder = sortOrder as any
-  await getSnippets()
-  selectFirstSnippet()
 }
 
 ipc.on('main-menu:find', () => {

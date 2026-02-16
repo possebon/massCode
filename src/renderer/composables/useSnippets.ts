@@ -27,6 +27,14 @@ const isSearch = ref(false)
 const isRestoreStateBlocked = ref(false)
 const searchSelectedIndex = ref<number>(-1)
 
+watch(
+  () => [state.snippetSortBy, state.snippetSortOrder],
+  async () => {
+    await getSnippets()
+    selectFirstSnippet()
+  },
+)
+
 const displayedSnippets = computed(() => {
   if (isSearch.value) {
     return snippetsBySearch.value
