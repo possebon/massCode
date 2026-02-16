@@ -4,7 +4,7 @@ import path from 'node:path'
 import Database from 'better-sqlite3'
 import { format } from 'date-fns'
 import fs from 'fs-extra'
-import { store } from '../store'
+import { getConfig, updateConfig } from '../config'
 import { log } from '../utils'
 
 const DB_NAME = 'massCode.db'
@@ -43,7 +43,7 @@ export function useDB() {
   if (db)
     return db
 
-  const dbPath = `${store.preferences.get('storagePath')}/${DB_NAME}`
+  const dbPath = `${getConfig().storagePath}/${DB_NAME}`
   const dbDir = path.dirname(dbPath)
 
   if (!fs.existsSync(dbDir)) {
@@ -158,7 +158,7 @@ export function reloadDB() {
     }
 
     // Определяем путь к новой базе данных
-    const dbPath = `${store.preferences.get('storagePath')}/${DB_NAME}`
+    const dbPath = `${getConfig().storagePath}/${DB_NAME}`
 
     // Создаем новое соединение с базой данных
     db = new Database(dbPath, {
@@ -214,7 +214,7 @@ export function clearDB() {
 
 export async function moveDB(path: string) {
   try {
-    const currentPath = `${store.preferences.get('storagePath')}/${DB_NAME}`
+    const currentPath = `${getConfig().storagePath}/${DB_NAME}`
     const newPath = `${path}/${DB_NAME}`
 
     const isExists = await fs.exists(newPath)
@@ -229,7 +229,7 @@ export async function moveDB(path: string) {
     }
 
     await fs.move(currentPath, newPath, { overwrite: true })
-    store.preferences.set('storagePath', path)
+    updateConfig({ storagePath: path })
 
     reloadDB()
   }
@@ -242,7 +242,7 @@ export async function moveDB(path: string) {
 export async function createBackup(manual = false) {
   try {
     const db = useDB()
-    const backupSettings = store.preferences.get('backup')
+    const backupSettings = getConfig().backup
 
     await fs.ensureDir(backupSettings.path)
 
@@ -255,7 +255,8 @@ export async function createBackup(manual = false) {
     const stmt = db.prepare(`VACUUM INTO ?`)
     stmt.run(backupFilePath)
 
-    store.preferences.set('backup.lastBackupTime', Date.now())
+    const backup = getConfig().backup
+    updateConfig({ backup: { ...backup, lastBackupTime: Date.now() } })
 
     await cleanupOldBackups()
 
@@ -269,7 +270,7 @@ export async function createBackup(manual = false) {
 
 async function cleanupOldBackups() {
   try {
-    const backupSettings = store.preferences.get('backup')
+    const backupSettings = getConfig().backup
 
     const files = await fs.readdir(backupSettings.path)
     const backupFiles = files
@@ -301,7 +302,7 @@ export async function deleteBackup(backupPath: string) {
 }
 
 function shouldCreateBackup() {
-  const backupSettings = store.preferences.get('backup')
+  const backupSettings = getConfig().backup
 
   if (!backupSettings.enabled) {
     return false
@@ -325,7 +326,7 @@ export async function startAutoBackup() {
       clearInterval(backupTimer)
     }
 
-    const backupSettings = store.preferences.get('backup')
+    const backupSettings = getConfig().backup
 
     if (!backupSettings.enabled) {
       return
@@ -362,7 +363,7 @@ export function stopAutoBackup() {
 
 export async function restoreFromBackup(backupFilePath: string) {
   try {
-    const storagePath = store.preferences.get('storagePath')
+    const storagePath = getConfig().storagePath
     const currentDbPath = path.join(storagePath, DB_NAME)
 
     const backupExists = await fs.exists(backupFilePath)
@@ -390,7 +391,7 @@ export async function restoreFromBackup(backupFilePath: string) {
 
 export async function getBackupList() {
   try {
-    const backupSettings = store.preferences.get('backup')
+    const backupSettings = getConfig().backup
 
     if (!(await fs.exists(backupSettings.path))) {
       return []
@@ -428,7 +429,7 @@ export async function getBackupList() {
 
 export async function moveBackupStorage(newPath: string) {
   try {
-    const backupSettings = store.preferences.get('backup')
+    const backupSettings = getConfig().backup
 
     const newPathExists = await fs.exists(newPath)
 
@@ -457,7 +458,8 @@ export async function moveBackupStorage(newPath: string) {
       await fs.move(sourcePath, targetPath, { overwrite: true })
     }
 
-    store.preferences.set('backup.path', newPath)
+    const currentBackup = getConfig().backup
+    updateConfig({ backup: { ...currentBackup, path: newPath } })
   }
   catch (error) {
     log('Error while moving backup storage', error)

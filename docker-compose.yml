@@ -1,0 +1,20 @@
+services:
+  masscode:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - masscode_data:/data
+    environment:
+      - MASSCODE_PORT=4321
+      - MASSCODE_STORAGE_PATH=/data
+      - MASSCODE_BACKUP_PATH=/data/backups
+      - MASSCODE_API_TOKEN=${MASSCODE_API_TOKEN:-}
+      - MASSCODE_API_URL=/api
+      - MASSCODE_BACKUP_ENABLED=true
+      - MASSCODE_BACKUP_INTERVAL=6
+      - MASSCODE_MAX_BACKUPS=5
+    restart: unless-stopped
+
+volumes:
+  masscode_data:

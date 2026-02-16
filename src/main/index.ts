@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { app, BrowserWindow, Menu } from 'electron'
 import { initApi } from './api'
+import { setConfig, setOnConfigUpdate } from './config'
 import { startAutoBackup } from './db'
 import { migrateJsonToSqlite } from './db/migrate'
 import { registerIPC } from './ipc'
@@ -88,6 +89,20 @@ else {
     catch (error) {
       log('Error registering IPC', error)
     }
+
+    // Initialize shared config from electron-store before starting API
+    setConfig({
+      storagePath: store.preferences.get('storagePath'),
+      apiPort: store.preferences.get('apiPort'),
+      version: app.getVersion(),
+      backup: store.preferences.get('backup'),
+    })
+
+    // Write-through: sync config changes back to electron-store
+    setOnConfigUpdate((config) => {
+      store.preferences.set('storagePath', config.storagePath)
+      store.preferences.set('backup', config.backup)
+    })
 
     try {
       await initApi()

@@ -1,8 +1,7 @@
 import { cors } from '@elysiajs/cors'
 import { swagger } from '@elysiajs/swagger'
-import { app as electronApp } from 'electron'
 import { Elysia } from 'elysia'
-import { store } from '../store'
+import { getConfig } from '../config'
 import { importEsm } from '../utils'
 import folders from './routes/folders'
 import snippets from './routes/snippets'
@@ -14,7 +13,7 @@ export async function initApi() {
   const { node } = await importEsm('@elysiajs/node')
 
   const app = new Elysia({ adapter: node() })
-  const port = store.preferences.get('apiPort')
+  const { apiPort, version } = getConfig()
 
   app
     .use(cors({ origin: '*' }))
@@ -23,7 +22,7 @@ export async function initApi() {
         documentation: {
           info: {
             title: 'massCode API',
-            version: electronApp.getVersion(),
+            version,
           },
         },
       }),
@@ -31,8 +30,8 @@ export async function initApi() {
     .use(snippets)
     .use(folders)
     .use(tags)
-    .listen(port)
+    .listen(apiPort)
 
   // eslint-disable-next-line no-console
-  console.log(`\nAPI started on port ${port}\n`)
+  console.log(`\nAPI started on port ${apiPort}\n`)
 }

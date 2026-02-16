@@ -1,6 +1,8 @@
 dist
 build/main
 build/renderer
+build/server
+build/web
 scripts/build-sponsored.sh
 
 node_modules

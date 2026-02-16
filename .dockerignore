@@ -1,0 +1,11 @@
+node_modules
+build
+dist
+.git
+.codegraph
+test-data
+*.md
+!README.md
+.env
+.env.*
+!.env.example

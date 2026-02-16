@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "build/server",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": [
+    "src/main/config.ts",
+    "src/main/db/**/*",
+    "src/main/api/routes/**/*",
+    "src/main/api/dto/**/*",
+    "src/main/utils/index.ts",
+    "src/server/**/*"
+  ]
+}
