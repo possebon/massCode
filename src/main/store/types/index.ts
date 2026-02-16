@@ -14,6 +14,10 @@ export interface AppStore {
     tagId?: number
     libraryFilter?: string
     isSidebarHidden?: boolean
+    snippetSortBy?: string
+    snippetSortOrder?: string
+    folderSortBy?: string
+    folderSortOrder?: string
   }
   isAutoMigratedFromJson: boolean
   nextDonateNotification?: number

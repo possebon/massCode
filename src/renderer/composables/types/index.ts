@@ -19,4 +19,8 @@ export interface SavedState {
   tagId?: number
   libraryFilter?: (typeof LibraryFilter)[keyof typeof LibraryFilter]
   isSidebarHidden?: boolean
+  snippetSortBy?: 'createdAt' | 'updatedAt' | 'name'
+  snippetSortOrder?: 'ASC' | 'DESC'
+  folderSortBy?: 'manual' | 'name'
+  folderSortOrder?: 'ASC' | 'DESC'
 }
