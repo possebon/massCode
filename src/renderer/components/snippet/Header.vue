@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useApp, useSnippets } from '@/composables'
 import { i18n, ipc } from '@/electron'
-import { Plus, Search, X } from 'lucide-vue-next'
+import * as DropdownMenu from '@/components/ui/shadcn/dropdown-menu'
+import { ArrowUpDown, Plus, Search, X } from 'lucide-vue-next'
 
 const {
   isSearch,
@@ -12,8 +13,24 @@ const {
   searchSelectedIndex,
   selectSearchSnippet,
   displayedSnippets,
+  getSnippets,
+  selectFirstSnippet,
 } = useSnippets()
-const { isFocusedSearch } = useApp()
+const { isFocusedSearch, state } = useApp()
+
+const snippetSortValue = computed(() => {
+  const by = state.snippetSortBy || 'createdAt'
+  const order = state.snippetSortOrder || 'DESC'
+  return `${by}:${order}`
+})
+
+async function onSnippetSortChange(value: string) {
+  const [sortBy, sortOrder] = value.split(':')
+  state.snippetSortBy = sortBy as any
+  state.snippetSortOrder = sortOrder as any
+  await getSnippets()
+  selectFirstSnippet()
+}
 
 ipc.on('main-menu:find', () => {
   isFocusedSearch.value = true
@@ -71,6 +88,42 @@ function onKeydown(event: KeyboardEvent) {
       >
         <X class="h-4 w-4" />
       </UiButton>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger as-child>
+          <UiActionButton
+            v-if="!isSearch"
+            :tooltip="i18n.t('sort.label')"
+          >
+            <ArrowUpDown class="h-3.5 w-3.5" />
+          </UiActionButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="start">
+          <DropdownMenu.RadioGroup
+            :model-value="snippetSortValue"
+            @update:model-value="onSnippetSortChange"
+          >
+            <DropdownMenu.RadioItem value="createdAt:DESC">
+              {{ i18n.t('sort.createdDesc') }}
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="createdAt:ASC">
+              {{ i18n.t('sort.createdAsc') }}
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="updatedAt:DESC">
+              {{ i18n.t('sort.updatedDesc') }}
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="updatedAt:ASC">
+              {{ i18n.t('sort.updatedAsc') }}
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.Separator />
+            <DropdownMenu.RadioItem value="name:ASC">
+              {{ i18n.t('sort.nameAsc') }}
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="name:DESC">
+              {{ i18n.t('sort.nameDesc') }}
+            </DropdownMenu.RadioItem>
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
       <UiActionButton
         v-if="!isSearch"
         :tooltip="i18n.t('action.new.snippet')"
