@@ -35,6 +35,26 @@ function flattenFolderTree(
   return acc
 }
 
+function sortFolderTree(
+  nodes: FoldersTreeResponse,
+  sortBy: string,
+  order: string,
+): FoldersTreeResponse {
+  if (sortBy === 'manual') return nodes
+
+  const sorted = [...nodes].sort((a, b) => {
+    const cmp = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    return order === 'DESC' ? -cmp : cmp
+  })
+
+  return sorted.map(node => ({
+    ...node,
+    children: node.children?.length
+      ? sortFolderTree(node.children as FoldersTreeResponse, sortBy, order)
+      : node.children,
+  }))
+}
+
 const flatFolderList = computed(() => flattenFolderTree(folders.value))
 
 const folderOrderMap = computed(() => {
@@ -269,7 +289,11 @@ function getFolderByIdFromTree(
 async function getFolders(shouldEnsureVisibility = true) {
   try {
     const { data } = await api.folders.getFoldersTree()
-    folders.value = data
+    folders.value = sortFolderTree(
+      data,
+      state.folderSortBy || 'manual',
+      state.folderSortOrder || 'ASC',
+    )
     syncSelectedFoldersWithTree()
 
     if (shouldEnsureVisibility) {
@@ -383,6 +407,7 @@ export function useFolders() {
     renameFolderId,
     selectedFolderIds,
     setFolderSelection,
+    folderSortBy: computed(() => state.folderSortBy || 'manual'),
     selectFolder,
     updateFolder,
   }
