@@ -37,6 +37,7 @@ export interface EditorSettings {
 
 export interface MarkdownSettings {
   scale: number
+  previewOnOpen: boolean
 }
 
 export interface BackupSettings {

@@ -20,6 +20,7 @@ export default new Store<PreferencesStore>({
     editor: EDITOR_DEFAULTS,
     markdown: {
       scale: 1,
+      previewOnOpen: true,
     },
     backup: {
       path: backupPath,

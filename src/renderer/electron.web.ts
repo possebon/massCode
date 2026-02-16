@@ -30,7 +30,7 @@ const PREFERENCES_DEFAULTS = {
     highlightLine: false,
     matchBrackets: true,
   },
-  markdown: { scale: 1 },
+  markdown: { scale: 1, previewOnOpen: true },
   backup: {
     path: '',
     enabled: true,

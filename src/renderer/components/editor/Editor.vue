@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { Language } from '@/components/editor/types'
+import { useClipboard, useCssVar, useDark, useDebounceFn } from '@vueuse/core'
+import CodeMirror from 'codemirror'
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'radix-vue'
 import {
   useApp,
   useEditor,
@@ -7,9 +10,6 @@ import {
   useSnippetUpdate,
 } from '@/composables'
 import { i18n, ipc } from '@/electron'
-import { useClipboard, useCssVar, useDark, useDebounceFn } from '@vueuse/core'
-import CodeMirror from 'codemirror'
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'radix-vue'
 import { EDITOR_DEFAULTS } from '~/main/store/constants'
 import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/edit/matchbrackets'
@@ -40,6 +40,8 @@ const {
   isFocusedSearch,
   isShowJsonVisualizer,
 } = useApp()
+
+const { markdownSettings } = useEditor()
 
 const { addToUpdateContentQueue } = useSnippetUpdate()
 
@@ -92,6 +94,9 @@ watch(selectedSnippetContent, () => {
   if (selectedSnippetContent.value?.language !== 'markdown') {
     isShowMarkdown.value = false
     isShowMindmap.value = false
+  }
+  else if (markdownSettings.previewOnOpen) {
+    isShowMarkdown.value = true
   }
 
   if (selectedSnippetContent.value?.language !== 'json') {

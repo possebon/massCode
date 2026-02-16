@@ -6,6 +6,7 @@ const cursorPosition = reactive({
 })
 
 const settings = reactive(store.preferences.get('editor'))
+const markdownSettings = reactive(store.preferences.get('markdown'))
 
 watch(
   settings,
@@ -15,9 +16,21 @@ watch(
   { deep: true },
 )
 
+watch(
+  markdownSettings,
+  () => {
+    store.preferences.set(
+      'markdown',
+      JSON.parse(JSON.stringify(markdownSettings)),
+    )
+  },
+  { deep: true },
+)
+
 export function useEditor() {
   return {
     cursorPosition,
+    markdownSettings,
     settings,
   }
 }

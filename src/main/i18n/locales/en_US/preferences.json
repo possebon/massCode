@@ -67,7 +67,8 @@
   },
   "markdown": {
     "label": "Markdown",
-    "codeRenderer": "Code block Renderer"
+    "codeRenderer": "Code block Renderer",
+    "previewOnOpen": "Show Preview on Open"
   },
   "api": {
     "label": "API Port",

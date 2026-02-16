@@ -4,7 +4,7 @@ import { Switch } from '@/components/ui/shadcn/switch'
 import { useEditor } from '@/composables'
 import { i18n } from '@/electron'
 
-const { settings } = useEditor()
+const { settings, markdownSettings } = useEditor()
 
 const wrap = ref(settings.wrap ? 'true' : 'false')
 
@@ -106,6 +106,14 @@ watch(
         <Switch
           :checked="settings.singleQuote"
           @update:checked="settings.singleQuote = $event"
+        />
+      </UiMenuFormItem>
+    </UiMenuFormSection>
+    <UiMenuFormSection :label="i18n.t('preferences:markdown.label')">
+      <UiMenuFormItem :label="i18n.t('preferences:markdown.previewOnOpen')">
+        <Switch
+          :checked="markdownSettings.previewOnOpen"
+          @update:checked="markdownSettings.previewOnOpen = $event"
         />
       </UiMenuFormItem>
     </UiMenuFormSection>
