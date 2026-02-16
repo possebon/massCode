@@ -1,0 +1,7 @@
+export { default as Root } from './DropdownMenu.vue'
+export { default as Trigger } from './DropdownMenuTrigger.vue'
+export { default as Content } from './DropdownMenuContent.vue'
+export { default as RadioGroup } from './DropdownMenuRadioGroup.vue'
+export { default as RadioItem } from './DropdownMenuRadioItem.vue'
+export { default as Label } from './DropdownMenuLabel.vue'
+export { default as Separator } from './DropdownMenuSeparator.vue'
