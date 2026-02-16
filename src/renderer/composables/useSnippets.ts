@@ -55,6 +55,14 @@ const selectedSnippets = computed(() => {
 const queryByLibraryOrFolderOrSearch = computed(() => {
   const query: SnippetsQuery = {}
 
+  // Sort params — always included
+  if (state.snippetSortBy) {
+    query.sort = state.snippetSortBy
+  }
+  if (state.snippetSortOrder) {
+    query.order = state.snippetSortOrder
+  }
+
   if (isSearch.value) {
     query.search = searchQuery.value
     return query
