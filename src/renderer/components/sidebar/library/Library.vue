@@ -4,11 +4,12 @@ import type { PerfectScrollbarExpose } from 'vue3-perfect-scrollbar'
 import Tree from '@/components/sidebar/folders/Tree.vue'
 import LibraryItem from '@/components/sidebar/library/Item.vue'
 import * as ContextMenu from '@/components/ui/shadcn/context-menu'
+import * as DropdownMenu from '@/components/ui/shadcn/dropdown-menu'
 import { useApp, useFolders, useSnippets } from '@/composables'
 import { LibraryFilter } from '@/composables/types'
 import { i18n, store } from '@/electron'
 import { scrollToElement } from '@/utils'
-import { Archive, Inbox, Plus, Star, Trash } from 'lucide-vue-next'
+import { Archive, ArrowUpDown, Inbox, Plus, Star, Trash } from 'lucide-vue-next'
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'radix-vue'
 
 const scrollbarRef = ref<PerfectScrollbarExpose | null>(null)
@@ -29,6 +30,19 @@ const {
   updateFolder,
   selectedFolderIds,
 } = useFolders()
+
+const folderSortValue = computed(() => {
+  const by = state.folderSortBy || 'manual'
+  const order = state.folderSortOrder || 'ASC'
+  return `${by}:${order}`
+})
+
+async function onFolderSortChange(value: string) {
+  const [sortBy, sortOrder] = value.split(':')
+  state.folderSortBy = sortBy as any
+  state.folderSortOrder = sortOrder as any
+  await getFolders()
+}
 
 const tagsListHeight = store.app.get('sizes.tagsListHeight') as number
 
@@ -217,12 +231,38 @@ function onResizeTagList(val: number[]) {
       <div class="text-[10px] font-bold uppercase">
         {{ i18n.t("sidebar.folders") }}
       </div>
-      <UiActionButton
-        :tooltip="i18n.t('action.new.folder')"
-        @click="createFolderAndSelect()"
-      >
-        <Plus class="h-4 w-4" />
-      </UiActionButton>
+      <div class="flex items-center">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger as-child>
+            <UiActionButton :tooltip="i18n.t('sort.label')">
+              <ArrowUpDown class="h-3.5 w-3.5" />
+            </UiActionButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="start">
+            <DropdownMenu.RadioGroup
+              :model-value="folderSortValue"
+              @update:model-value="onFolderSortChange"
+            >
+              <DropdownMenu.RadioItem value="manual:ASC">
+                {{ i18n.t('sort.manual') }}
+              </DropdownMenu.RadioItem>
+              <DropdownMenu.Separator />
+              <DropdownMenu.RadioItem value="name:ASC">
+                {{ i18n.t('sort.nameAsc') }}
+              </DropdownMenu.RadioItem>
+              <DropdownMenu.RadioItem value="name:DESC">
+                {{ i18n.t('sort.nameDesc') }}
+              </DropdownMenu.RadioItem>
+            </DropdownMenu.RadioGroup>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+        <UiActionButton
+          :tooltip="i18n.t('action.new.folder')"
+          @click="createFolderAndSelect()"
+        >
+          <Plus class="h-4 w-4" />
+        </UiActionButton>
+      </div>
     </div>
     <SplitterPanel as-child>
       <Tree
