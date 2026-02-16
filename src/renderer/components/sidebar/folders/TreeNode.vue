@@ -45,6 +45,7 @@ const {
   selectedFolderIds,
   folders,
   getFolderByIdFromTree,
+  folderSortBy,
 } = useFolders()
 
 const hoveredId = ref()
@@ -334,7 +335,7 @@ if (focusHandler)
       'has-children': hasChildren,
       'is-dragged': isDragged,
     }"
-    draggable="true"
+    :draggable="folderSortBy === 'manual'"
     @dragstart.stop="onDragStart"
     @dragleave.stop="onDragLeave"
     @dragend.stop="onDragEnd"
