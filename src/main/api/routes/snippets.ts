@@ -15,6 +15,7 @@ app
       const db = useDB()
       const {
         search,
+        sort,
         order,
         folderId,
         tagId,
@@ -23,6 +24,9 @@ app
         isInbox,
       } = query
       const searchQuery = search ? `%${query.search}%` : undefined
+
+      const SORT_WHITELIST = ['name', 'createdAt', 'updatedAt'] as const
+      const sortField = SORT_WHITELIST.includes(sort as any) ? sort : 'createdAt'
 
       const WHERE: any[] = []
       const ORDER = order || 'DESC'
@@ -126,7 +130,7 @@ app
         createdAt,
         updatedAt
       FROM snippet_data
-      ORDER BY createdAt ${ORDER}
+      ORDER BY ${sortField} ${ORDER}
     `)
 
       const result = stmt.all(...params) as SnippetsResponse
