@@ -116,5 +116,15 @@
     "emptySnippetsList": "No Snippets",
     "search": "Search",
     "addTag": "Add Tag"
+  },
+  "sort": {
+    "label": "Sort",
+    "manual": "Manual",
+    "nameAsc": "Name A-Z",
+    "nameDesc": "Name Z-A",
+    "createdDesc": "Date created (newest)",
+    "createdAsc": "Date created (oldest)",
+    "updatedDesc": "Date updated (newest)",
+    "updatedAsc": "Date updated (oldest)"
   }
 }
